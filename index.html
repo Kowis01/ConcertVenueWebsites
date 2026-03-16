@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blaine Bailey Concert Map</title>
+  <meta name="description" content="Interactive map of Blaine Bailey's past venues with search, filters, clustering, and directions links." />
+
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+
+  <style>
+    :root {
+      --bg: #0c1017;
+      --panel: rgba(12, 16, 23, 0.92);
+      --panel-2: rgba(21, 28, 39, 0.92);
+      --soft: #9eb0c9;
+      --text: #f4f7fb;
+      --line: rgba(255,255,255,0.08);
+      --accent: #f09a43;
+      --accent-2: #ffbc75;
+      --chip: rgba(240, 154, 67, 0.12);
+      --shadow: 0 18px 45px rgba(0, 0, 0, 0.35);
+      --radius: 20px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+    }
+
+    a { color: inherit; }
+
+    #app {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      height: 100vh;
+      width: 100%;
+    }
+
+    .sidebar {
+      position: relative;
+      z-index: 1000;
+      background:
+        radial-gradient(circle at top right, rgba(240, 154, 67, 0.14), transparent 28%),
+        linear-gradient(180deg, rgba(16, 21, 31, 0.96), rgba(8, 12, 19, 0.96));
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    .sidebar-inner {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .hero {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      background: var(--chip);
+      color: var(--accent-2);
+      border: 1px solid rgba(240, 154, 67, 0.25);
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+      line-height: 1.08;
+      margin: 0 0 8px;
+    }
+
+    .subtext {
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.035);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 12px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--soft);
+      margin-bottom: 6px;
+    }
+
+    .stat-value {
+      font-size: 23px;
+      font-weight: 700;
+    }
+
+    .search-wrap {
+      position: relative;
+    }
+
+    .search-wrap input, select {
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      padding: 13px 14px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+
+    .search-wrap input:focus, select:focus {
+      border-color: rgba(240, 154, 67, 0.5);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .filter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      appearance: none;
+      border: 1px solid rgba(240, 154, 67, 0.28);
+      background: rgba(240, 154, 67, 0.1);
+      color: var(--accent-2);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .button:hover { transform: translateY(-1px); }
+    .button.secondary {
+      background: rgba(255,255,255,0.04);
+      border-color: var(--line);
+      color: var(--text);
+    }
+
+    .status {
+      font-size: 12px;
+      color: var(--soft);
+      min-height: 18px;
+    }
+
+    .list-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      color: var(--soft);
+      font-size: 13px;
+      padding-top: 2px;
+    }
+
+    .results {
+      min-height: 0;
+      overflow: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    .results::-webkit-scrollbar { width: 10px; }
+    .results::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.08);
+      border-radius: 999px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+      border-radius: 18px;
+      padding: 14px;
+      cursor: pointer;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .card:hover, .card.active {
+      transform: translateY(-2px);
+      border-color: rgba(240, 154, 67, 0.45);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.22);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .pill {
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 6px 10px;
+      border: 1px solid rgba(240, 154, 67, 0.26);
+      background: rgba(240, 154, 67, 0.1);
+      color: var(--accent-2);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .card h3 {
+      font-size: 16px;
+      margin: 0;
+      line-height: 1.25;
+    }
+
+    .meta, .address {
+      color: var(--soft);
+      font-size: 13px;
+      line-height: 1.4;
+      margin-top: 6px;
+    }
+
+    .map-shell {
+      position: relative;
+      min-width: 0;
+    }
+
+    #map {
+      height: 100%;
+      width: 100%;
+      background: #111822;
+    }
+
+    .map-topbar {
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      right: 18px;
+      z-index: 900;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .floating {
+      pointer-events: auto;
+      background: rgba(11, 16, 24, 0.82);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+    }
+
+    .legend {
+      font-size: 13px;
+      color: var(--soft);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .legend strong { color: var(--text); }
+
+    .marker-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(240, 154, 67, 0.2);
+      vertical-align: middle;
+    }
+
+    .mobile-toggle {
+      display: none;
+      width: 100%;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      background: rgba(16, 22, 31, 0.96);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .popup {
+      min-width: 220px;
+    }
+
+    .popup h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .popup p {
+      margin: 6px 0;
+      color: var(--soft);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .popup .route-link {
+      display: inline-flex;
+      margin-top: 10px;
+      text-decoration: none;
+      padding: 9px 11px;
+      border-radius: 12px;
+      background: rgba(240,154,67,0.12);
+      border: 1px solid rgba(240,154,67,0.28);
+      color: var(--accent-2);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .custom-marker {
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 35% 35%, var(--accent-2), var(--accent));
+      border: 2px solid rgba(255,255,255,0.92);
+      box-shadow: 0 0 0 7px rgba(240, 154, 67, 0.18), 0 10px 18px rgba(0, 0, 0, 0.3);
+    }
+
+    .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+      background: rgba(240, 154, 67, 0.22);
+    }
+    .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
+      background: rgba(240, 154, 67, 0.86);
+      color: white;
+      font-weight: 700;
+      border: 2px solid rgba(255,255,255,0.85);
+    }
+
+    .empty-state {
+      border: 1px dashed rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 18px;
+      color: var(--soft);
+      font-size: 14px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    @media (max-width: 980px) {
+      #app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: min(92vw, 390px);
+        transform: translateX(-100%);
+        transition: transform 0.28s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-toggle {
+        display: flex;
+      }
+
+      .map-topbar {
+        left: 12px;
+        right: 12px;
+        top: 12px;
+      }
+
+      .floating {
+        max-width: calc(100% - 70px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-inner">
+        <section class="hero">
+          <div class="eyebrow">Concert map</div>
+          <h1>Blaine Bailey past venues</h1>
+          <p class="subtext">A polished, searchable concert map with clustering, filters, a custom sidebar, smooth map motion, and quick route links.</p>
+        </section>
+
+        <section class="stats">
+          <div class="stat">
+            <div class="stat-label">Concerts</div>
+            <div class="stat-value" id="statConcerts">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">States</div>
+            <div class="stat-value" id="statStates">—</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Years</div>
+            <div class="stat-value" id="statYears">—</div>
+          </div>
+        </section>
+
+        <div class="search-wrap">
+          <input id="searchInput" type="text" placeholder="Search venue, city, state, or concert name" />
+        </div>
+
+        <div class="filter-grid">
+          <select id="stateFilter"><option value="">All states</option></select>
+          <select id="yearFilter"><option value="">All years</option></select>
+          <select id="monthFilter"><option value="">All months</option></select>
+          <select id="sortFilter">
+            <option value="newest">Newest first</option>
+            <option value="oldest">Oldest first</option>
+            <option value="venue">Venue A–Z</option>
+            <option value="city">City A–Z</option>
+          </select>
+        </div>
+
+        <div class="toolbar">
+          <button class="button" id="fitAllBtn">Fit all pins</button>
+          <button class="button secondary" id="resetBtn">Reset filters</button>
+                  </div>
+
+        <div class="status" id="statusText">Loading venues…</div>
+
+        <div class="list-head">
+          <span id="resultCount">0 results</span>
+          <span id="coordStatus"></span>
+        </div>
+
+        <div class="results" id="results"></div>
+      </div>
+    </aside>
+
+    <main class="map-shell">
+      <div class="map-topbar">
+        <div class="floating legend">
+          <span class="marker-dot"></span>
+          <strong>Tip:</strong> search the list, click a result, or zoom into a cluster.
+        </div>
+        <div class="floating mobile-toggle">
+          <button class="button" id="sidebarToggle">Show list</button>
+        </div>
+      </div>
+      <div id="map" aria-label="Map of Blaine Bailey venues"></div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+
+  <script>
+    const MAP_CENTER = [39.5, -98.35];
+    const MAP_ZOOM = 4;
+    const map = L.map('map', {
+      zoomControl: false,
+      minZoom: 3,
+      worldCopyJump: false
+    }).setView(MAP_CENTER, MAP_ZOOM);
+
+    L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const markerCluster = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      maxClusterRadius: 50,
+      disableClusteringAtZoom: 9,
+      animate: true
+    });
+    map.addLayer(markerCluster);
+
+    const customIcon = L.divIcon({
+      className: '',
+      html: '<div class="custom-marker"></div>',
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+      popupAnchor: [0, -8]
+    });
+
+    const els = {
+      sidebar: document.getElementById('sidebar'),
+      sidebarToggle: document.getElementById('sidebarToggle'),
+      searchInput: document.getElementById('searchInput'),
+      stateFilter: document.getElementById('stateFilter'),
+      yearFilter: document.getElementById('yearFilter'),
+      monthFilter: document.getElementById('monthFilter'),
+      sortFilter: document.getElementById('sortFilter'),
+      fitAllBtn: document.getElementById('fitAllBtn'),
+      resetBtn: document.getElementById('resetBtn'),
+      results: document.getElementById('results'),
+      resultCount: document.getElementById('resultCount'),
+      statusText: document.getElementById('statusText'),
+      coordStatus: document.getElementById('coordStatus'),
+      statConcerts: document.getElementById('statConcerts'),
+      statStates: document.getElementById('statStates'),
+      statYears: document.getElementById('statYears')
+    };
+
+    let allVenues = [];
+    let visibleVenues = [];
+    let markersById = new Map();
+    let activeId = null;
+    let fuse = null;
+
+    const monthOrder = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    function setStatus(text) {
+      els.statusText.textContent = text;
+    }
+
+    function googleDirectionsLink(venue) {
+      const query = [venue.address, venue.venue, venue.city, venue.state].filter(Boolean).join(', ');
+      return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+    }
+
+    function buildPopup(venue) {
+      const address = [venue.address, venue.city, venue.state].filter(Boolean).join(', ');
+      return `
+        <div class="popup">
+          <h4>${escapeHtml(venue.venue)}</h4>
+          <p><strong>${escapeHtml(venue.dateLabel)}</strong></p>
+          <p>${escapeHtml(venue.name)}</p>
+          <p>${escapeHtml(address || `${venue.city}, ${venue.state}`)}</p>
+          <a class="route-link" target="_blank" rel="noopener noreferrer" href="${googleDirectionsLink(venue)}">Open route</a>
+        </div>
+      `;
+    }
+
+    function escapeHtml(text) {
+      return String(text ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function populateSelect(selectEl, values, placeholder) {
+      selectEl.innerHTML = `<option value="">${placeholder}</option>` + values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+    }
+
+    function initFilters(venues) {
+      const states = [...new Set(venues.map(v => v.state).filter(Boolean))].sort();
+      const years = [...new Set(venues.map(v => String(v.year)).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
+      const months = monthOrder.filter(month => venues.some(v => v.month === month));
+
+      populateSelect(els.stateFilter, states, 'All states');
+      populateSelect(els.yearFilter, years, 'All years');
+      populateSelect(els.monthFilter, months, 'All months');
+    }
+
+    function initStats(venues) {
+      const states = new Set(venues.map(v => v.state).filter(Boolean));
+      const years = new Set(venues.map(v => v.year).filter(Boolean));
+      els.statConcerts.textContent = venues.length;
+      els.statStates.textContent = states.size;
+      els.statYears.textContent = years.size;
+    }
+
+    function buildFuseIndex(venues) {
+      fuse = new Fuse(venues, {
+        includeScore: true,
+        threshold: 0.32,
+        keys: [
+          { name: 'name', weight: 0.35 },
+          { name: 'venue', weight: 0.35 },
+          { name: 'city', weight: 0.15 },
+          { name: 'state', weight: 0.1 },
+          { name: 'address', weight: 0.05 }
+        ]
+      });
+    }
+
+    function sortVenues(venues, mode) {
+      const copy = [...venues];
+      if (mode === 'oldest') {
+        copy.sort((a, b) => compareDate(a, b));
+      } else if (mode === 'venue') {
+        copy.sort((a, b) => a.venue.localeCompare(b.venue));
+      } else if (mode === 'city') {
+        copy.sort((a, b) => a.city.localeCompare(b.city) || a.state.localeCompare(b.state));
+      } else {
+        copy.sort((a, b) => compareDate(b, a));
+      }
+      return copy;
+    }
+
+    function compareDate(a, b) {
+      return (a.year - b.year) || (a.monthNumber - b.monthNumber) || (a.day - b.day);
+    }
+
+    function filterVenues() {
+      const search = els.searchInput.value.trim();
+      const state = els.stateFilter.value;
+      const year = els.yearFilter.value;
+      const month = els.monthFilter.value;
+      const sort = els.sortFilter.value;
+
+      let filtered = allVenues;
+
+      if (search && fuse) {
+        const ids = new Set(fuse.search(search).map(result => result.item.id));
+        filtered = filtered.filter(v => ids.has(v.id));
+      }
+
+      if (state) filtered = filtered.filter(v => v.state === state);
+      if (year) filtered = filtered.filter(v => String(v.year) === year);
+      if (month) filtered = filtered.filter(v => v.month === month);
+
+      visibleVenues = sortVenues(filtered, sort);
+      renderList();
+      renderMarkers();
+    }
+
+    function renderList() {
+      els.resultCount.textContent = `${visibleVenues.length} result${visibleVenues.length === 1 ? '' : 's'}`;
+
+      if (!visibleVenues.length) {
+        els.results.innerHTML = '<div class="empty-state">No concerts match the current search and filters. Try clearing one filter or searching a different keyword.</div>';
+        return;
+      }
+
+      els.results.innerHTML = visibleVenues.map(venue => {
+        const address = [venue.address, venue.city, venue.state].filter(Boolean).join(', ');
+        return `
+          <article class="card ${activeId === venue.id ? 'active' : ''}" data-id="${venue.id}">
+            <div class="card-top">
+              <div>
+                <h3>${escapeHtml(venue.venue)}</h3>
+                <div class="meta">${escapeHtml(venue.name)}</div>
+              </div>
+              <div class="pill">${escapeHtml(venue.dateLabel)}</div>
+            </div>
+            <div class="meta">${escapeHtml([venue.city, venue.state].filter(Boolean).join(', '))}</div>
+            <div class="address">${escapeHtml(address || 'Geocoding from venue + city/state')}</div>
+          </article>
+        `;
+      }).join('');
+
+      [...els.results.querySelectorAll('.card')].forEach(card => {
+        card.addEventListener('click', () => focusVenue(Number(card.dataset.id), true));
+      });
+    }
+
+    function renderMarkers() {
+      markerCluster.clearLayers();
+      let countWithCoords = 0;
+
+      visibleVenues.forEach(venue => {
+        const marker = markersById.get(venue.id);
+        if (marker) {
+          markerCluster.addLayer(marker);
+          countWithCoords += 1;
+        }
+      });
+
+      els.coordStatus.textContent = `${countWithCoords}/${visibleVenues.length} mapped`;
+    }
+
+    function focusVenue(id, openSidebarOnMobile = false) {
+      const venue = allVenues.find(v => v.id === id);
+      const marker = markersById.get(id);
+      activeId = id;
+      renderList();
+
+      if (!venue || !marker) return;
+
+      const latLng = marker.getLatLng();
+      map.flyTo(latLng, Math.max(map.getZoom(), 10), {
+        animate: true,
+        duration: 1.2,
+        easeLinearity: 0.25
+      });
+
+      setTimeout(() => marker.openPopup(), 500);
+
+      const target = els.results.querySelector(`[data-id="${id}"]`);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      history.replaceState(null, '', `#venue-${id}`);
+
+      if (openSidebarOnMobile && window.innerWidth <= 980) {
+        els.sidebar.classList.add('open');
+        els.sidebarToggle.textContent = 'Hide list';
+      }
+    }
+
+    function fitToVisible() {
+      const layers = visibleVenues.map(v => markersById.get(v.id)).filter(Boolean);
+      if (!layers.length) {
+        map.setView(MAP_CENTER, MAP_ZOOM);
+        return;
+      }
+      const group = L.featureGroup(layers);
+      map.flyToBounds(group.getBounds().pad(0.18), { duration: 1.2 });
+    }
+
+    async function resolveCoordinates(venues) {
+      let mapped = 0;
+
+      venues.forEach(venue => {
+        const coords = (Number.isFinite(venue.lat) && Number.isFinite(venue.lng))
+          ? { lat: Number(venue.lat), lng: Number(venue.lng) }
+          : null;
+
+        if (!coords) return;
+
+        const marker = L.marker([coords.lat, coords.lng], { icon: customIcon, title: venue.venue })
+          .bindPopup(buildPopup(venue));
+
+        marker.on('click', () => {
+          activeId = venue.id;
+          renderList();
+        });
+
+        markersById.set(venue.id, marker);
+        mapped += 1;
+      });
+
+      els.coordStatus.textContent = `${mapped}/${venues.length} mapped`;
+    }
+
+    function resetFilters() {
+      els.searchInput.value = '';
+      els.stateFilter.value = '';
+      els.yearFilter.value = '';
+      els.monthFilter.value = '';
+      els.sortFilter.value = 'newest';
+      activeId = null;
+      history.replaceState(null, '', window.location.pathname + window.location.search);
+      filterVenues();
+      fitToVisible();
+    }
+
+    function bindEvents() {
+      [els.searchInput, els.stateFilter, els.yearFilter, els.monthFilter, els.sortFilter].forEach(el => {
+        const eventName = el.tagName === 'INPUT' ? 'input' : 'change';
+        el.addEventListener(eventName, filterVenues);
+      });
+
+      els.fitAllBtn.addEventListener('click', fitToVisible);
+      els.resetBtn.addEventListener('click', resetFilters);
+      els.sidebarToggle.addEventListener('click', () => {
+        const open = els.sidebar.classList.toggle('open');
+        els.sidebarToggle.textContent = open ? 'Hide list' : 'Show list';
+      });
+
+      map.on('click', () => {
+        if (window.innerWidth <= 980) {
+          els.sidebar.classList.remove('open');
+          els.sidebarToggle.textContent = 'Show list';
+        }
+      });
+    }
+
+    async function init() {
+      bindEvents();
+      setStatus('Loading venue data…');
+
+      const response = await fetch('./data/venues.json');
+      allVenues = await response.json();
+
+      initStats(allVenues);
+      initFilters(allVenues);
+      buildFuseIndex(allVenues);
+      setStatus('Building the map…');
+
+      await resolveCoordinates(allVenues);
+      filterVenues();
+      fitToVisible();
+      setStatus('Ready. All venue pins are preloaded for faster browsing.');
+
+      const hash = window.location.hash || '';
+      const match = hash.match(/^#venue-(\d+)$/);
+      if (match) {
+        const id = Number(match[1]);
+        setTimeout(() => focusVenue(id, true), 400);
+      }
+    }
+
+    init().catch(error => {
+      console.error(error);
+      setStatus('Something went wrong while loading the site. Open the browser console for details.');
+      els.results.innerHTML = `<div class="empty-state">The app hit an error while loading. A common cause is opening <code>index.html</code> directly instead of serving the folder from GitHub Pages or a local web server.</div>`;
+    });
+  </script>
+</body>
+</html>
