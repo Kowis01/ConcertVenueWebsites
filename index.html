@@ -27,6 +27,7 @@
     }
 
     * { box-sizing: border-box; }
+
     html, body {
       margin: 0;
       height: 100%;
@@ -36,6 +37,10 @@
       overflow: hidden;
     }
 
+    body {
+      min-height: 100vh;
+    }
+
     a { color: inherit; }
 
     #app {
@@ -43,6 +48,7 @@
       grid-template-columns: 400px 1fr;
       height: 100vh;
       width: 100%;
+      overflow: hidden;
     }
 
     .sidebar {
@@ -55,8 +61,11 @@
       display: flex;
       flex-direction: column;
       min-width: 0;
+      min-height: 0;
+      height: 100vh;
       backdrop-filter: blur(10px);
       box-shadow: var(--shadow);
+      overflow: hidden;
     }
 
     .sidebar-inner {
@@ -66,6 +75,7 @@
       gap: 14px;
       min-height: 0;
       height: 100%;
+      overflow: hidden;
     }
 
     .hero {
@@ -73,6 +83,7 @@
       background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
       border-radius: var(--radius);
       padding: 18px;
+      flex-shrink: 0;
     }
 
     .eyebrow {
@@ -107,6 +118,7 @@
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
+      flex-shrink: 0;
     }
 
     .stat {
@@ -131,9 +143,11 @@
 
     .search-wrap {
       position: relative;
+      flex-shrink: 0;
     }
 
-    .search-wrap input, select {
+    .search-wrap input,
+    select {
       width: 100%;
       border-radius: 14px;
       border: 1px solid var(--line);
@@ -145,15 +159,39 @@
       transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
     }
 
-    .search-wrap input:focus, select:focus {
+    .search-wrap input::placeholder {
+      color: rgba(244, 247, 251, 0.62);
+    }
+
+    /* Fix dropdown text visibility */
+    select {
+      color: #111 !important;
+      background: #ffffff !important;
+      border: 1px solid rgba(255,255,255,0.14);
+    }
+
+    select option {
+      color: #111 !important;
+      background: #ffffff !important;
+    }
+
+    .search-wrap input:focus,
+    select:focus {
       border-color: rgba(240, 154, 67, 0.5);
       background: rgba(255,255,255,0.06);
+    }
+
+    /* Keep focused select readable */
+    select:focus {
+      background: #ffffff !important;
+      color: #111 !important;
     }
 
     .filter-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
+      flex-shrink: 0;
     }
 
     .toolbar {
@@ -161,6 +199,7 @@
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
+      flex-shrink: 0;
     }
 
     .button {
@@ -176,6 +215,7 @@
     }
 
     .button:hover { transform: translateY(-1px); }
+
     .button.secondary {
       background: rgba(255,255,255,0.04);
       border-color: var(--line);
@@ -186,6 +226,7 @@
       font-size: 12px;
       color: var(--soft);
       min-height: 18px;
+      flex-shrink: 0;
     }
 
     .list-head {
@@ -196,21 +237,34 @@
       color: var(--soft);
       font-size: 13px;
       padding-top: 2px;
+      flex-shrink: 0;
     }
 
+    /* Fix venue list scrolling */
     .results {
+      flex: 1 1 auto;
       min-height: 0;
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-right: 4px;
+      padding-right: 6px;
+      padding-bottom: 10px;
+      -webkit-overflow-scrolling: touch;
     }
 
-    .results::-webkit-scrollbar { width: 10px; }
+    .results::-webkit-scrollbar {
+      width: 10px;
+    }
+
     .results::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.14);
       border-radius: 999px;
+    }
+
+    .results::-webkit-scrollbar-track {
+      background: transparent;
     }
 
     .card {
@@ -220,9 +274,11 @@
       padding: 14px;
       cursor: pointer;
       transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+      flex-shrink: 0;
     }
 
-    .card:hover, .card.active {
+    .card:hover,
+    .card.active {
       transform: translateY(-2px);
       border-color: rgba(240, 154, 67, 0.45);
       box-shadow: 0 10px 25px rgba(0,0,0,0.22);
@@ -265,6 +321,7 @@
     .map-shell {
       position: relative;
       min-width: 0;
+      min-height: 0;
     }
 
     #map {
@@ -372,6 +429,7 @@
     .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
       background: rgba(240, 154, 67, 0.22);
     }
+
     .marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div {
       background: rgba(240, 154, 67, 0.86);
       color: white;
@@ -390,6 +448,10 @@
     }
 
     @media (max-width: 980px) {
+      html, body {
+        overflow: hidden;
+      }
+
       #app {
         grid-template-columns: 1fr;
       }
@@ -466,7 +528,7 @@
         <div class="toolbar">
           <button class="button" id="fitAllBtn">Fit all pins</button>
           <button class="button secondary" id="resetBtn">Reset filters</button>
-                  </div>
+        </div>
 
         <div class="status" id="statusText">Loading venues…</div>
 
@@ -500,6 +562,7 @@
   <script>
     const MAP_CENTER = [39.5, -98.35];
     const MAP_ZOOM = 4;
+
     const map = L.map('map', {
       zoomControl: false,
       minZoom: 3,
@@ -592,7 +655,9 @@
     }
 
     function populateSelect(selectEl, values, placeholder) {
-      selectEl.innerHTML = `<option value="">${placeholder}</option>` + values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+      selectEl.innerHTML =
+        `<option value="">${placeholder}</option>` +
+        values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
     }
 
     function initFilters(venues) {
@@ -688,7 +753,7 @@
               <div class="pill">${escapeHtml(venue.dateLabel)}</div>
             </div>
             <div class="meta">${escapeHtml([venue.city, venue.state].filter(Boolean).join(', '))}</div>
-            <div class="address">${escapeHtml(address || 'Geocoding from venue + city/state')}</div>
+            <div class="address">${escapeHtml(address || 'Venue address unavailable')}</div>
           </article>
         `;
       }).join('');
@@ -796,6 +861,7 @@
 
       els.fitAllBtn.addEventListener('click', fitToVisible);
       els.resetBtn.addEventListener('click', resetFilters);
+
       els.sidebarToggle.addEventListener('click', () => {
         const open = els.sidebar.classList.toggle('open');
         els.sidebarToggle.textContent = open ? 'Hide list' : 'Show list';
