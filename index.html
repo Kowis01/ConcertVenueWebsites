@@ -569,11 +569,13 @@
             <select id="yearFilter" disabled><option value="">All years</option></select>
             <select id="monthFilter" disabled><option value="">All months</option></select>
             <select id="sizeFilter" disabled>
-              <option value="">All venue sizes</option>
-              <option value="small">Small venues</option>
-              <option value="medium">Medium venues</option>
-              <option value="large">Large venues</option>
-              <option value="unknown">Unknown size</option>
+              <option value="">All venue capacities</option>
+              <option value="under250">Under 250</option>
+              <option value="250to499">250–499</option>
+              <option value="500to999">500–999</option>
+              <option value="1000to1999">1,000–1,999</option>
+              <option value="2000plus">2,000+</option>
+              <option value="unknown">Unknown capacity</option>
             </select>
           </div>
 
@@ -731,9 +733,11 @@
 
     function getVenueSizeCategory(occupancy) {
       if (!occupancy) return 'unknown';
-      if (occupancy < 500) return 'small';
-      if (occupancy < 2000) return 'medium';
-      return 'large';
+      if (occupancy < 250) return 'under250';
+      if (occupancy < 500) return '250to499';
+      if (occupancy < 1000) return '500to999';
+      if (occupancy < 2000) return '1000to1999';
+      return '2000plus';
     }
 
     function groupKey(venue) {
