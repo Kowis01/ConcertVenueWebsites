@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Blaine Bailey Concert Map</title>
-  <meta name="description" content="Interactive map of Blaine Bailey's past venues with search, filters, clustering, and directions links." />
+  <title>Concert Venue Map</title>
+  <meta name="description" content="Interactive multi-artist concert venue map with artist filter, search, venue clustering, stacked repeat performances, and venue capacity display." />
 
   <link rel="preconnect" href="https://unpkg.com" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
@@ -15,7 +15,6 @@
     :root {
       --bg: #0c1017;
       --panel: rgba(12, 16, 23, 0.92);
-      --panel-2: rgba(21, 28, 39, 0.92);
       --soft: #9eb0c9;
       --text: #f4f7fb;
       --line: rgba(255,255,255,0.08);
@@ -37,15 +36,12 @@
       overflow: hidden;
     }
 
-    body {
-      min-height: 100vh;
-    }
-
+    body { min-height: 100vh; }
     a { color: inherit; }
 
     #app {
       display: grid;
-      grid-template-columns: 400px 1fr;
+      grid-template-columns: 420px 1fr;
       height: 100vh;
       width: 100%;
       overflow: hidden;
@@ -116,7 +112,7 @@
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 10px;
       flex-shrink: 0;
     }
@@ -137,12 +133,15 @@
     }
 
     .stat-value {
-      font-size: 23px;
+      font-size: 21px;
       font-weight: 700;
     }
 
-    .search-wrap {
-      position: relative;
+    .search-wrap,
+    .filter-stack,
+    .toolbar,
+    .status,
+    .list-head {
       flex-shrink: 0;
     }
 
@@ -163,16 +162,15 @@
       color: rgba(244, 247, 251, 0.62);
     }
 
-    /* Fix dropdown text visibility */
     select {
       color: #111 !important;
-      background: #ffffff !important;
+      background: #fff !important;
       border: 1px solid rgba(255,255,255,0.14);
     }
 
     select option {
       color: #111 !important;
-      background: #ffffff !important;
+      background: #fff !important;
     }
 
     .search-wrap input:focus,
@@ -181,17 +179,32 @@
       background: rgba(255,255,255,0.06);
     }
 
-    /* Keep focused select readable */
     select:focus {
-      background: #ffffff !important;
+      background: #fff !important;
       color: #111 !important;
+    }
+
+    .filter-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .filter-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      flex-shrink: 0;
+      transition: opacity 0.2s ease, max-height 0.2s ease;
+    }
+
+    .filter-grid.hidden {
+      opacity: 0.45;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     .toolbar {
@@ -199,7 +212,6 @@
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
-      flex-shrink: 0;
     }
 
     .button {
@@ -211,7 +223,7 @@
       border-radius: 12px;
       cursor: pointer;
       font-weight: 600;
-      transition: transform 0.2s ease, background 0.2s ease;
+      transition: transform 0.2s ease, background 0.2s ease, opacity 0.2s ease;
     }
 
     .button:hover { transform: translateY(-1px); }
@@ -222,11 +234,17 @@
       color: var(--text);
     }
 
+    .button:disabled,
+    select:disabled,
+    input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .status {
       font-size: 12px;
       color: var(--soft);
       min-height: 18px;
-      flex-shrink: 0;
     }
 
     .list-head {
@@ -237,10 +255,8 @@
       color: var(--soft);
       font-size: 13px;
       padding-top: 2px;
-      flex-shrink: 0;
     }
 
-    /* Fix venue list scrolling */
     .results {
       flex: 1 1 auto;
       min-height: 0;
@@ -254,18 +270,13 @@
       -webkit-overflow-scrolling: touch;
     }
 
-    .results::-webkit-scrollbar {
-      width: 10px;
-    }
-
+    .results::-webkit-scrollbar { width: 10px; }
     .results::-webkit-scrollbar-thumb {
       background: rgba(255,255,255,0.14);
       border-radius: 999px;
     }
 
-    .results::-webkit-scrollbar-track {
-      background: transparent;
-    }
+    .results::-webkit-scrollbar-track { background: transparent; }
 
     .card {
       border: 1px solid var(--line);
@@ -311,11 +322,17 @@
       line-height: 1.25;
     }
 
-    .meta, .address {
+    .meta,
+    .address,
+    .occupancy {
       color: var(--soft);
       font-size: 13px;
       line-height: 1.4;
       margin-top: 6px;
+    }
+
+    .occupancy strong {
+      color: var(--text);
     }
 
     .map-shell {
@@ -389,7 +406,7 @@
     }
 
     .popup {
-      min-width: 220px;
+      min-width: 250px;
     }
 
     .popup h4 {
@@ -404,9 +421,32 @@
       line-height: 1.45;
     }
 
+    .show-list {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .show-item {
+      padding: 8px 10px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .show-item strong {
+      display: block;
+      color: var(--text);
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
     .popup .route-link {
       display: inline-flex;
-      margin-top: 10px;
+      margin-top: 12px;
       text-decoration: none;
       padding: 9px 11px;
       border-radius: 12px;
@@ -448,9 +488,7 @@
     }
 
     @media (max-width: 980px) {
-      html, body {
-        overflow: hidden;
-      }
+      html, body { overflow: hidden; }
 
       #app {
         grid-template-columns: 1fr;
@@ -459,7 +497,7 @@
       .sidebar {
         position: absolute;
         inset: 0 auto 0 0;
-        width: min(92vw, 390px);
+        width: min(92vw, 400px);
         transform: translateX(-100%);
         transition: transform 0.28s ease;
       }
@@ -481,6 +519,10 @@
       .floating {
         max-width: calc(100% - 70px);
       }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
   </style>
 </head>
@@ -490,11 +532,15 @@
       <div class="sidebar-inner">
         <section class="hero">
           <div class="eyebrow">Concert map</div>
-          <h1>Blaine Bailey past venues</h1>
-          <p class="subtext">A polished, searchable concert map with clustering, filters, a custom sidebar, smooth map motion, and quick route links.</p>
+          <h1 id="heroTitle">Artist venue explorer</h1>
+          <p class="subtext" id="heroText">Pick an artist to map their past venues, then filter by state, year, month, sort order, and venue size.</p>
         </section>
 
         <section class="stats">
+          <div class="stat">
+            <div class="stat-label">Artist</div>
+            <div class="stat-value" id="statArtist">—</div>
+          </div>
           <div class="stat">
             <div class="stat-label">Concerts</div>
             <div class="stat-value" id="statConcerts">—</div>
@@ -509,28 +555,47 @@
           </div>
         </section>
 
-        <div class="search-wrap">
-          <input id="searchInput" type="text" placeholder="Search venue, city, state, or concert name" />
-        </div>
-
-        <div class="filter-grid">
-          <select id="stateFilter"><option value="">All states</option></select>
-          <select id="yearFilter"><option value="">All years</option></select>
-          <select id="monthFilter"><option value="">All months</option></select>
-          <select id="sortFilter">
-            <option value="newest">Newest first</option>
-            <option value="oldest">Oldest first</option>
-            <option value="venue">Venue A–Z</option>
-            <option value="city">City A–Z</option>
+        <div class="filter-stack">
+          <select id="artistFilter">
+            <option value="">Select an artist</option>
           </select>
+
+          <div class="search-wrap">
+            <input id="searchInput" type="text" placeholder="Search venue, city, state, or concert name" disabled />
+          </div>
+
+          <div class="filter-grid hidden" id="advancedFilters">
+            <select id="stateFilter" disabled><option value="">All states</option></select>
+            <select id="yearFilter" disabled><option value="">All years</option></select>
+            <select id="monthFilter" disabled><option value="">All months</option></select>
+            <select id="sizeFilter" disabled>
+              <option value="">All venue sizes</option>
+              <option value="small">Small venues</option>
+              <option value="medium">Medium venues</option>
+              <option value="large">Large venues</option>
+              <option value="unknown">Unknown size</option>
+            </select>
+          </div>
+
+          <div class="filter-row">
+            <select id="sortFilter" disabled>
+              <option value="newest">Newest first</option>
+              <option value="oldest">Oldest first</option>
+              <option value="venue">Venue A–Z</option>
+              <option value="city">City A–Z</option>
+              <option value="venueSizeDesc">Venue size: largest first</option>
+              <option value="venueSizeAsc">Venue size: smallest first</option>
+            </select>
+
+            <button class="button secondary" id="resetBtn" disabled>Reset filters</button>
+          </div>
         </div>
 
         <div class="toolbar">
-          <button class="button" id="fitAllBtn">Fit all pins</button>
-          <button class="button secondary" id="resetBtn">Reset filters</button>
+          <button class="button" id="fitAllBtn" disabled>Fit all pins</button>
         </div>
 
-        <div class="status" id="statusText">Loading venues…</div>
+        <div class="status" id="statusText">Loading venue data…</div>
 
         <div class="list-head">
           <span id="resultCount">0 results</span>
@@ -545,13 +610,13 @@
       <div class="map-topbar">
         <div class="floating legend">
           <span class="marker-dot"></span>
-          <strong>Tip:</strong> search the list, click a result, or zoom into a cluster.
+          <strong>Tip:</strong> choose an artist, then search, filter, or click a marker to see every show stacked at that venue.
         </div>
         <div class="floating mobile-toggle">
           <button class="button" id="sidebarToggle">Show list</button>
         </div>
       </div>
-      <div id="map" aria-label="Map of Blaine Bailey venues"></div>
+      <div id="map" aria-label="Map of concert venues"></div>
     </main>
   </div>
 
@@ -596,26 +661,34 @@
     const els = {
       sidebar: document.getElementById('sidebar'),
       sidebarToggle: document.getElementById('sidebarToggle'),
+      heroTitle: document.getElementById('heroTitle'),
+      heroText: document.getElementById('heroText'),
+      artistFilter: document.getElementById('artistFilter'),
       searchInput: document.getElementById('searchInput'),
       stateFilter: document.getElementById('stateFilter'),
       yearFilter: document.getElementById('yearFilter'),
       monthFilter: document.getElementById('monthFilter'),
+      sizeFilter: document.getElementById('sizeFilter'),
       sortFilter: document.getElementById('sortFilter'),
+      advancedFilters: document.getElementById('advancedFilters'),
       fitAllBtn: document.getElementById('fitAllBtn'),
       resetBtn: document.getElementById('resetBtn'),
       results: document.getElementById('results'),
       resultCount: document.getElementById('resultCount'),
       statusText: document.getElementById('statusText'),
       coordStatus: document.getElementById('coordStatus'),
+      statArtist: document.getElementById('statArtist'),
       statConcerts: document.getElementById('statConcerts'),
       statStates: document.getElementById('statStates'),
       statYears: document.getElementById('statYears')
     };
 
     let allVenues = [];
+    let artistVenues = [];
     let visibleVenues = [];
-    let markersById = new Map();
-    let activeId = null;
+    let groupedVisibleVenues = [];
+    let markersByGroupId = new Map();
+    let activeGroupId = null;
     let fuse = null;
 
     const monthOrder = [
@@ -627,24 +700,6 @@
       els.statusText.textContent = text;
     }
 
-    function googleDirectionsLink(venue) {
-      const query = [venue.address, venue.venue, venue.city, venue.state].filter(Boolean).join(', ');
-      return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
-    }
-
-    function buildPopup(venue) {
-      const address = [venue.address, venue.city, venue.state].filter(Boolean).join(', ');
-      return `
-        <div class="popup">
-          <h4>${escapeHtml(venue.venue)}</h4>
-          <p><strong>${escapeHtml(venue.dateLabel)}</strong></p>
-          <p>${escapeHtml(venue.name)}</p>
-          <p>${escapeHtml(address || `${venue.city}, ${venue.state}`)}</p>
-          <a class="route-link" target="_blank" rel="noopener noreferrer" href="${googleDirectionsLink(venue)}">Open route</a>
-        </div>
-      `;
-    }
-
     function escapeHtml(text) {
       return String(text ?? '')
         .replaceAll('&', '&amp;')
@@ -654,13 +709,132 @@
         .replaceAll("'", '&#039;');
     }
 
+    function normalizeVenue(rawVenue) {
+      return {
+        ...rawVenue,
+        artist: rawVenue.artist || 'Unknown artist',
+        occupancy: parseOccupancy(rawVenue.occupancy),
+        occupancyLabel: rawVenue.occupancyLabel || formatOccupancy(rawVenue.occupancy),
+        venueSizeCategory: rawVenue.venueSizeCategory || getVenueSizeCategory(parseOccupancy(rawVenue.occupancy))
+      };
+    }
+
+    function parseOccupancy(value) {
+      const num = Number(value);
+      return Number.isFinite(num) && num > 0 ? num : null;
+    }
+
+    function formatOccupancy(value) {
+      const num = parseOccupancy(value);
+      return num ? `${num.toLocaleString()} capacity` : 'Capacity unknown';
+    }
+
+    function getVenueSizeCategory(occupancy) {
+      if (!occupancy) return 'unknown';
+      if (occupancy < 500) return 'small';
+      if (occupancy < 2000) return 'medium';
+      return 'large';
+    }
+
+    function groupKey(venue) {
+      return [
+        venue.artist?.trim().toLowerCase() || '',
+        venue.venue?.trim().toLowerCase() || '',
+        venue.address?.trim().toLowerCase() || '',
+        venue.city?.trim().toLowerCase() || '',
+        venue.state?.trim().toLowerCase() || ''
+      ].join('|');
+    }
+
+    function compareDate(a, b) {
+      return (a.year - b.year) || (a.monthNumber - b.monthNumber) || (a.day - b.day);
+    }
+
+    function googleDirectionsLink(group) {
+      const query = [group.address, group.venue, group.city, group.state].filter(Boolean).join(', ');
+      return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(query)}`;
+    }
+
+    function buildGroupedVenueList(venues) {
+      const groupedMap = new Map();
+
+      venues.forEach(venue => {
+        if (!Number.isFinite(Number(venue.lat)) || !Number.isFinite(Number(venue.lng))) return;
+
+        const key = groupKey(venue);
+
+        if (!groupedMap.has(key)) {
+          groupedMap.set(key, {
+            groupId: key,
+            artist: venue.artist,
+            venue: venue.venue,
+            address: venue.address,
+            city: venue.city,
+            state: venue.state,
+            lat: Number(venue.lat),
+            lng: Number(venue.lng),
+            occupancy: venue.occupancy,
+            occupancyLabel: venue.occupancyLabel,
+            venueSizeCategory: venue.venueSizeCategory,
+            shows: []
+          });
+        }
+
+        const group = groupedMap.get(key);
+        group.shows.push(venue);
+
+        if (!group.occupancy && venue.occupancy) {
+          group.occupancy = venue.occupancy;
+          group.occupancyLabel = venue.occupancyLabel;
+          group.venueSizeCategory = venue.venueSizeCategory;
+        }
+      });
+
+      const grouped = [...groupedMap.values()].map(group => {
+        group.shows.sort((a, b) => compareDate(b, a));
+        group.latestShow = group.shows[0];
+        group.totalShows = group.shows.length;
+        group.dateLabel = group.latestShow?.dateLabel || '';
+        return group;
+      });
+
+      return grouped;
+    }
+
+    function buildPopup(group) {
+      const address = [group.address, group.city, group.state].filter(Boolean).join(', ');
+      const showsHtml = group.shows.map(show => `
+        <div class="show-item">
+          <strong>${escapeHtml(show.dateLabel)}</strong>
+          <div>${escapeHtml(show.name || group.artist)}</div>
+        </div>
+      `).join('');
+
+      return `
+        <div class="popup">
+          <h4>${escapeHtml(group.venue)}</h4>
+          <p><strong>${escapeHtml(group.artist)}</strong></p>
+          <p>${escapeHtml(address || `${group.city}, ${group.state}`)}</p>
+          <p>${escapeHtml(group.occupancyLabel || 'Capacity unknown')}</p>
+          <p>${group.totalShows} performance${group.totalShows === 1 ? '' : 's'} at this venue</p>
+          <div class="show-list">${showsHtml}</div>
+          <a class="route-link" target="_blank" rel="noopener noreferrer" href="${googleDirectionsLink(group)}">Open route</a>
+        </div>
+      `;
+    }
+
     function populateSelect(selectEl, values, placeholder) {
       selectEl.innerHTML =
         `<option value="">${placeholder}</option>` +
         values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
     }
 
-    function initFilters(venues) {
+    function populateArtists(venues) {
+      const artists = [...new Set(venues.map(v => v.artist).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      populateSelect(els.artistFilter, artists, 'Select an artist');
+    }
+
+    function initArtistFilters(venues) {
       const states = [...new Set(venues.map(v => v.state).filter(Boolean))].sort();
       const years = [...new Set(venues.map(v => String(v.year)).filter(Boolean))].sort((a, b) => Number(b) - Number(a));
       const months = monthOrder.filter(month => venues.some(v => v.month === month));
@@ -670,9 +844,39 @@
       populateSelect(els.monthFilter, months, 'All months');
     }
 
-    function initStats(venues) {
+    function setControlsEnabled(isEnabled) {
+      [
+        els.searchInput,
+        els.stateFilter,
+        els.yearFilter,
+        els.monthFilter,
+        els.sizeFilter,
+        els.sortFilter,
+        els.fitAllBtn,
+        els.resetBtn
+      ].forEach(el => {
+        el.disabled = !isEnabled;
+      });
+
+      els.advancedFilters.classList.toggle('hidden', !isEnabled);
+    }
+
+    function setDefaultHero() {
+      els.heroTitle.textContent = 'Artist venue explorer';
+      els.heroText.textContent = 'Pick an artist to map their past venues, then filter by state, year, month, sort order, and venue size.';
+      els.statArtist.textContent = '—';
+      els.statConcerts.textContent = '—';
+      els.statStates.textContent = '—';
+      els.statYears.textContent = '—';
+    }
+
+    function updateArtistSummary(artist, venues) {
       const states = new Set(venues.map(v => v.state).filter(Boolean));
       const years = new Set(venues.map(v => v.year).filter(Boolean));
+
+      els.heroTitle.textContent = `${artist} past venues`;
+      els.heroText.textContent = `Mapped shows, stacked repeat venues, quick route links, search, and filtering by state, year, month, and venue size.`;
+      els.statArtist.textContent = artist;
       els.statConcerts.textContent = venues.length;
       els.statStates.textContent = states.size;
       els.statYears.textContent = years.size;
@@ -683,108 +887,105 @@
         includeScore: true,
         threshold: 0.32,
         keys: [
-          { name: 'name', weight: 0.35 },
-          { name: 'venue', weight: 0.35 },
-          { name: 'city', weight: 0.15 },
-          { name: 'state', weight: 0.1 },
-          { name: 'address', weight: 0.05 }
+          { name: 'name', weight: 0.30 },
+          { name: 'venue', weight: 0.30 },
+          { name: 'city', weight: 0.14 },
+          { name: 'state', weight: 0.10 },
+          { name: 'address', weight: 0.06 },
+          { name: 'artist', weight: 0.10 }
         ]
       });
     }
 
     function sortVenues(venues, mode) {
       const copy = [...venues];
+
       if (mode === 'oldest') {
         copy.sort((a, b) => compareDate(a, b));
       } else if (mode === 'venue') {
         copy.sort((a, b) => a.venue.localeCompare(b.venue));
       } else if (mode === 'city') {
         copy.sort((a, b) => a.city.localeCompare(b.city) || a.state.localeCompare(b.state));
+      } else if (mode === 'venueSizeAsc') {
+        copy.sort((a, b) => (a.occupancy || Infinity) - (b.occupancy || Infinity) || compareDate(b, a));
+      } else if (mode === 'venueSizeDesc') {
+        copy.sort((a, b) => (b.occupancy || -1) - (a.occupancy || -1) || compareDate(b, a));
       } else {
         copy.sort((a, b) => compareDate(b, a));
       }
+
       return copy;
     }
 
-    function compareDate(a, b) {
-      return (a.year - b.year) || (a.monthNumber - b.monthNumber) || (a.day - b.day);
-    }
-
-    function filterVenues() {
-      const search = els.searchInput.value.trim();
-      const state = els.stateFilter.value;
-      const year = els.yearFilter.value;
-      const month = els.monthFilter.value;
-      const sort = els.sortFilter.value;
-
-      let filtered = allVenues;
-
-      if (search && fuse) {
-        const ids = new Set(fuse.search(search).map(result => result.item.id));
-        filtered = filtered.filter(v => ids.has(v.id));
-      }
-
-      if (state) filtered = filtered.filter(v => v.state === state);
-      if (year) filtered = filtered.filter(v => String(v.year) === year);
-      if (month) filtered = filtered.filter(v => v.month === month);
-
-      visibleVenues = sortVenues(filtered, sort);
-      renderList();
-      renderMarkers();
+    function renderEmptyPrompt(message = 'Choose an artist to begin mapping venues.') {
+      els.resultCount.textContent = '0 results';
+      els.coordStatus.textContent = '';
+      els.results.innerHTML = `<div class="empty-state">${escapeHtml(message)}</div>`;
     }
 
     function renderList() {
       els.resultCount.textContent = `${visibleVenues.length} result${visibleVenues.length === 1 ? '' : 's'}`;
 
       if (!visibleVenues.length) {
-        els.results.innerHTML = '<div class="empty-state">No concerts match the current search and filters. Try clearing one filter or searching a different keyword.</div>';
+        els.results.innerHTML = '<div class="empty-state">No concerts match the current filters. Try clearing one filter or choosing a different artist.</div>';
         return;
       }
 
       els.results.innerHTML = visibleVenues.map(venue => {
         const address = [venue.address, venue.city, venue.state].filter(Boolean).join(', ');
+        const groupId = groupKey(venue);
+
         return `
-          <article class="card ${activeId === venue.id ? 'active' : ''}" data-id="${venue.id}">
+          <article class="card ${activeGroupId === groupId ? 'active' : ''}" data-group-id="${escapeHtml(groupId)}">
             <div class="card-top">
               <div>
                 <h3>${escapeHtml(venue.venue)}</h3>
-                <div class="meta">${escapeHtml(venue.name)}</div>
+                <div class="meta">${escapeHtml(venue.name || venue.artist)}</div>
               </div>
               <div class="pill">${escapeHtml(venue.dateLabel)}</div>
             </div>
             <div class="meta">${escapeHtml([venue.city, venue.state].filter(Boolean).join(', '))}</div>
             <div class="address">${escapeHtml(address || 'Venue address unavailable')}</div>
+            <div class="occupancy"><strong>Venue size:</strong> ${escapeHtml(venue.occupancyLabel || 'Capacity unknown')}</div>
           </article>
         `;
       }).join('');
 
       [...els.results.querySelectorAll('.card')].forEach(card => {
-        card.addEventListener('click', () => focusVenue(Number(card.dataset.id), true));
+        card.addEventListener('click', () => focusGroup(card.dataset.groupId, true));
       });
     }
 
     function renderMarkers() {
       markerCluster.clearLayers();
-      let countWithCoords = 0;
+      markersByGroupId.clear();
 
-      visibleVenues.forEach(venue => {
-        const marker = markersById.get(venue.id);
-        if (marker) {
-          markerCluster.addLayer(marker);
-          countWithCoords += 1;
-        }
+      let mapped = 0;
+      groupedVisibleVenues.forEach(group => {
+        if (!Number.isFinite(group.lat) || !Number.isFinite(group.lng)) return;
+
+        const marker = L.marker([group.lat, group.lng], { icon: customIcon, title: group.venue })
+          .bindPopup(buildPopup(group));
+
+        marker.on('click', () => {
+          activeGroupId = group.groupId;
+          renderList();
+        });
+
+        markersByGroupId.set(group.groupId, marker);
+        markerCluster.addLayer(marker);
+        mapped += 1;
       });
 
-      els.coordStatus.textContent = `${countWithCoords}/${visibleVenues.length} mapped`;
+      els.coordStatus.textContent = `${mapped}/${groupedVisibleVenues.length} mapped venues`;
     }
 
-    function focusVenue(id, openSidebarOnMobile = false) {
-      const venue = allVenues.find(v => v.id === id);
-      const marker = markersById.get(id);
-      activeId = id;
+    function focusGroup(groupId, openSidebarOnMobile = false) {
+      const marker = markersByGroupId.get(groupId);
+      activeGroupId = groupId;
       renderList();
 
-      if (!venue || !marker) return;
+      if (!marker) return;
 
       const latLng = marker.getLatLng();
       map.flyTo(latLng, Math.max(map.getZoom(), 10), {
@@ -795,10 +996,8 @@
 
       setTimeout(() => marker.openPopup(), 500);
 
-      const target = els.results.querySelector(`[data-id="${id}"]`);
+      const target = els.results.querySelector(`[data-group-id="${CSS.escape(groupId)}"]`);
       if (target) target.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-      history.replaceState(null, '', `#venue-${id}`);
 
       if (openSidebarOnMobile && window.innerWidth <= 980) {
         els.sidebar.classList.add('open');
@@ -807,7 +1006,7 @@
     }
 
     function fitToVisible() {
-      const layers = visibleVenues.map(v => markersById.get(v.id)).filter(Boolean);
+      const layers = [...markersByGroupId.values()];
       if (!layers.length) {
         map.setView(MAP_CENTER, MAP_ZOOM);
         return;
@@ -816,47 +1015,110 @@
       map.flyToBounds(group.getBounds().pad(0.18), { duration: 1.2 });
     }
 
-    async function resolveCoordinates(venues) {
-      let mapped = 0;
+    function filterVenues() {
+      const artist = els.artistFilter.value;
 
-      venues.forEach(venue => {
-        const coords = (Number.isFinite(venue.lat) && Number.isFinite(venue.lng))
-          ? { lat: Number(venue.lat), lng: Number(venue.lng) }
-          : null;
+      if (!artist) {
+        artistVenues = [];
+        visibleVenues = [];
+        groupedVisibleVenues = [];
+        activeGroupId = null;
+        markerCluster.clearLayers();
+        markersByGroupId.clear();
+        setControlsEnabled(false);
+        setDefaultHero();
+        setStatus('Pick an artist to load their venues.');
+        renderEmptyPrompt();
+        map.setView(MAP_CENTER, MAP_ZOOM);
+        return;
+      }
 
-        if (!coords) return;
+      setControlsEnabled(true);
 
-        const marker = L.marker([coords.lat, coords.lng], { icon: customIcon, title: venue.venue })
-          .bindPopup(buildPopup(venue));
+      const search = els.searchInput.value.trim();
+      const state = els.stateFilter.value;
+      const year = els.yearFilter.value;
+      const month = els.monthFilter.value;
+      const size = els.sizeFilter.value;
+      const sort = els.sortFilter.value;
 
-        marker.on('click', () => {
-          activeId = venue.id;
-          renderList();
-        });
+      let filtered = allVenues.filter(v => v.artist === artist);
+      artistVenues = filtered;
 
-        markersById.set(venue.id, marker);
-        mapped += 1;
-      });
+      if (search && fuse) {
+        const ids = new Set(
+          fuse.search(search)
+            .map(result => result.item)
+            .filter(item => item.artist === artist)
+            .map(item => item.id)
+        );
+        filtered = filtered.filter(v => ids.has(v.id));
+      }
 
-      els.coordStatus.textContent = `${mapped}/${venues.length} mapped`;
+      if (state) filtered = filtered.filter(v => v.state === state);
+      if (year) filtered = filtered.filter(v => String(v.year) === year);
+      if (month) filtered = filtered.filter(v => v.month === month);
+      if (size) filtered = filtered.filter(v => v.venueSizeCategory === size);
+
+      visibleVenues = sortVenues(filtered, sort);
+      groupedVisibleVenues = buildGroupedVenueList(visibleVenues);
+
+      updateArtistSummary(artist, artistVenues);
+      renderList();
+      renderMarkers();
+
+      if (!visibleVenues.length) {
+        setStatus(`No matching shows for ${artist}.`);
+      } else {
+        setStatus(`Showing ${visibleVenues.length} show${visibleVenues.length === 1 ? '' : 's'} across ${groupedVisibleVenues.length} venue${groupedVisibleVenues.length === 1 ? '' : 's'}.`);
+      }
     }
 
-    function resetFilters() {
+    function handleArtistChange() {
+      const artist = els.artistFilter.value;
+
       els.searchInput.value = '';
       els.stateFilter.value = '';
       els.yearFilter.value = '';
       els.monthFilter.value = '';
+      els.sizeFilter.value = '';
       els.sortFilter.value = 'newest';
-      activeId = null;
-      history.replaceState(null, '', window.location.pathname + window.location.search);
+      activeGroupId = null;
+
+      if (!artist) {
+        filterVenues();
+        return;
+      }
+
+      const selectedArtistVenues = allVenues.filter(v => v.artist === artist);
+      initArtistFilters(selectedArtistVenues);
+      buildFuseIndex(selectedArtistVenues);
+      filterVenues();
+      fitToVisible();
+    }
+
+    function resetFilters() {
+      if (!els.artistFilter.value) return;
+
+      els.searchInput.value = '';
+      els.stateFilter.value = '';
+      els.yearFilter.value = '';
+      els.monthFilter.value = '';
+      els.sizeFilter.value = '';
+      els.sortFilter.value = 'newest';
+      activeGroupId = null;
       filterVenues();
       fitToVisible();
     }
 
     function bindEvents() {
-      [els.searchInput, els.stateFilter, els.yearFilter, els.monthFilter, els.sortFilter].forEach(el => {
+      els.artistFilter.addEventListener('change', handleArtistChange);
+
+      [els.searchInput, els.stateFilter, els.yearFilter, els.monthFilter, els.sizeFilter, els.sortFilter].forEach(el => {
         const eventName = el.tagName === 'INPUT' ? 'input' : 'change';
-        el.addEventListener(eventName, filterVenues);
+        el.addEventListener(eventName, () => {
+          filterVenues();
+        });
       });
 
       els.fitAllBtn.addEventListener('click', fitToVisible);
@@ -877,27 +1139,17 @@
 
     async function init() {
       bindEvents();
-      setStatus('Loading venue data…');
+      setDefaultHero();
+      setControlsEnabled(false);
+      renderEmptyPrompt('Choose an artist to begin mapping venues.');
 
       const response = await fetch('./data/venues.json');
-      allVenues = await response.json();
+      const raw = await response.json();
 
-      initStats(allVenues);
-      initFilters(allVenues);
-      buildFuseIndex(allVenues);
-      setStatus('Building the map…');
+      allVenues = raw.map(normalizeVenue);
+      populateArtists(allVenues);
 
-      await resolveCoordinates(allVenues);
-      filterVenues();
-      fitToVisible();
-      setStatus('Ready. All venue pins are preloaded for faster browsing.');
-
-      const hash = window.location.hash || '';
-      const match = hash.match(/^#venue-(\d+)$/);
-      if (match) {
-        const id = Number(match[1]);
-        setTimeout(() => focusVenue(id, true), 400);
-      }
+      setStatus('Ready. Choose an artist to load the map.');
     }
 
     init().catch(error => {
