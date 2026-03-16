@@ -712,12 +712,14 @@
     }
 
     function normalizeVenue(rawVenue) {
+      const occupancy = parseOccupancy(rawVenue.occupancy);
+    
       return {
         ...rawVenue,
-        artist: rawVenue.artist || 'Unknown artist',
-        occupancy: parseOccupancy(rawVenue.occupancy),
+        artist: (rawVenue.artist || '').trim() || 'Unknown artist',
+        occupancy,
         occupancyLabel: rawVenue.occupancyLabel || formatOccupancy(rawVenue.occupancy),
-        venueSizeCategory: rawVenue.venueSizeCategory || getVenueSizeCategory(parseOccupancy(rawVenue.occupancy))
+        venueSizeCategory: getVenueSizeCategory(occupancy)
       };
     }
 
