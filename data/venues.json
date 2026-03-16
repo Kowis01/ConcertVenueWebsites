@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey Texas Music Revolution 2025",
     "month": "June",
     "monthNumber": 6,
@@ -13,10 +14,14 @@
     "dateLabel": "June 6, 2025",
     "geocodeQuery": "Downtown Historic Mckinney Square, McKinney, TX, USA",
     "lat": 33.198,
-    "lng": -96.616
+    "lng": -96.616,
+    "occupancy": null,
+    "occupancyLabel": "Capacity unknown",
+    "venueSizeCategory": "unknown"
   },
   {
     "id": 2,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Sierra Hull",
     "month": "October",
     "monthNumber": 10,
@@ -29,10 +34,14 @@
     "dateLabel": "October 17, 2024",
     "geocodeQuery": "112 St Louis Ave, Tulips, Fort Worth, TX, USA",
     "lat": 32.7316,
-    "lng": -97.3275
+    "lng": -97.3275,
+    "occupancy": 500,
+    "occupancyLabel": "Just under 500 capacity",
+    "venueSizeCategory": "medium"
   },
   {
     "id": 3,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey",
     "month": "October",
     "monthNumber": 10,
@@ -45,10 +54,14 @@
     "dateLabel": "October 10, 2024",
     "geocodeQuery": "1604 8th Avenue South, The Basement, Nashville, TN, USA",
     "lat": 36.1370504,
-    "lng": -86.7810663
+    "lng": -86.7810663,
+    "occupancy": 150,
+    "occupancyLabel": "150 capacity",
+    "venueSizeCategory": "small"
   },
   {
     "id": 4,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey Born and Raised Music Festival 2024",
     "month": "September",
     "monthNumber": 9,
@@ -61,10 +74,14 @@
     "dateLabel": "September 12, 2024",
     "geocodeQuery": "Pryor Oklahoma, Pryor, OK, USA",
     "lat": 36.3085,
-    "lng": -95.3169
+    "lng": -95.3169,
+    "occupancy": null,
+    "occupancyLabel": "Capacity unknown",
+    "venueSizeCategory": "unknown"
   },
   {
     "id": 5,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Tyler Halverson",
     "month": "June",
     "monthNumber": 6,
@@ -77,10 +94,14 @@
     "dateLabel": "June 28, 2024",
     "geocodeQuery": "5015 Kirby Drive, Goode Company Armadillo Palace, Houston, TX, USA",
     "lat": 29.7273,
-    "lng": -95.4182
+    "lng": -95.4182,
+    "occupancy": 1300,
+    "occupancyLabel": "1,300 standing capacity",
+    "venueSizeCategory": "large"
   },
   {
     "id": 6,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Tyler Halverson",
     "month": "June",
     "monthNumber": 6,
@@ -93,10 +114,14 @@
     "dateLabel": "June 27, 2024",
     "geocodeQuery": "1724 Tancahua St, Brewster Street Ice House, Corpus Christi, TX, USA",
     "lat": 27.8089,
-    "lng": -97.3946
+    "lng": -97.3946,
+    "occupancy": 800,
+    "occupancyLabel": "Up to 800 capacity",
+    "venueSizeCategory": "medium"
   },
   {
     "id": 7,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with William Beckmann",
     "month": "June",
     "monthNumber": 6,
@@ -109,10 +134,14 @@
     "dateLabel": "June 22, 2024",
     "geocodeQuery": "221 East Howell Street, Red River Station BBQ, Saint Jo, TX, USA",
     "lat": 33.6965,
-    "lng": -97.5223
+    "lng": -97.5223,
+    "occupancy": 1000,
+    "occupancyLabel": "Just over 1,000 capacity",
+    "venueSizeCategory": "large"
   },
   {
     "id": 8,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Tyler Halverson",
     "month": "June",
     "monthNumber": 6,
@@ -125,10 +154,14 @@
     "dateLabel": "June 21, 2024",
     "geocodeQuery": "14492 Old Bandera Rd, John T. Floore's Country Store, Helotes, TX, USA",
     "lat": 29.5867,
-    "lng": -98.6964
+    "lng": -98.6964,
+    "occupancy": 2000,
+    "occupancyLabel": "Up to 2,000 standing capacity",
+    "venueSizeCategory": "large"
   },
   {
     "id": 9,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Turnpike Troubadours",
     "month": "June",
     "monthNumber": 6,
@@ -141,10 +174,14 @@
     "dateLabel": "June 8, 2024",
     "geocodeQuery": "Exit 1, I-35, WinStar World Casino & Resort, Thackerville, OK, USA",
     "lat": 33.7591549,
-    "lng": -97.1304113
+    "lng": -97.1304113,
+    "occupancy": 3500,
+    "occupancyLabel": "3,500-seat Global Event Center",
+    "venueSizeCategory": "large"
   },
   {
     "id": 10,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Vincent Neil Emerson",
     "month": "May",
     "monthNumber": 5,
@@ -157,10 +194,14 @@
     "dateLabel": "May 31, 2024",
     "geocodeQuery": "1141 NW 2nd Street, Beer City Music Hall, Oklahoma City, OK, USA",
     "lat": 35.4689,
-    "lng": -97.5301
+    "lng": -97.5301,
+    "occupancy": 500,
+    "occupancyLabel": "500 capacity",
+    "venueSizeCategory": "medium"
   },
   {
     "id": 11,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Free Concert",
     "month": "May",
     "monthNumber": 5,
@@ -173,10 +214,14 @@
     "dateLabel": "May 30, 2024",
     "geocodeQuery": "423 North Main Street, Cain's Ballroom, Tulsa, OK, USA",
     "lat": 36.1596,
-    "lng": -95.9922
+    "lng": -95.9922,
+    "occupancy": 1700,
+    "occupancyLabel": "Up to 1,700 standing capacity",
+    "venueSizeCategory": "large"
   },
   {
     "id": 12,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Vincent Neil Emerson",
     "month": "May",
     "monthNumber": 5,
@@ -189,10 +234,14 @@
     "dateLabel": "May 29, 2024",
     "geocodeQuery": "1230 W. Davis St., The Kessler, Dallas, TX, USA",
     "lat": 32.7406,
-    "lng": -96.8477
+    "lng": -96.8477,
+    "occupancy": 500,
+    "occupancyLabel": "Up to 500 capacity",
+    "venueSizeCategory": "medium"
   },
   {
     "id": 13,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Kyle Nix & the 38s",
     "month": "April",
     "monthNumber": 4,
@@ -205,10 +254,14 @@
     "dateLabel": "April 13, 2024",
     "geocodeQuery": "Luckenbach, Texas, Fredericksburg, TX, USA",
     "lat": 30.2338,
-    "lng": -98.7595
+    "lng": -98.7595,
+    "occupancy": null,
+    "occupancyLabel": "Capacity unknown",
+    "venueSizeCategory": "unknown"
   },
   {
     "id": 14,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Vincent Neil Emerson",
     "month": "March",
     "monthNumber": 3,
@@ -221,10 +274,14 @@
     "dateLabel": "March 30, 2024",
     "geocodeQuery": "3509 Lemp Avenue, Off Broadway, St Louis, MO, USA",
     "lat": 38.5949,
-    "lng": -90.2102
+    "lng": -90.2102,
+    "occupancy": 349,
+    "occupancyLabel": "349 capacity",
+    "venueSizeCategory": "small"
   },
   {
     "id": 15,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Vincent Neil Emerson",
     "month": "March",
     "monthNumber": 3,
@@ -237,10 +294,14 @@
     "dateLabel": "March 29, 2024",
     "geocodeQuery": "1013 Park Avenue, Rose Music Hall, Columbia, MO, USA",
     "lat": 38.9517,
-    "lng": -92.3258
+    "lng": -92.3258,
+    "occupancy": 650,
+    "occupancyLabel": "650 event capacity",
+    "venueSizeCategory": "medium"
   },
   {
     "id": 16,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Vincent Neil Emerson",
     "month": "March",
     "monthNumber": 3,
@@ -253,10 +314,14 @@
     "dateLabel": "March 28, 2024",
     "geocodeQuery": "519 W. Dickson St., George's Majestic Lounge, Fayetteville, AR, USA",
     "lat": 36.0679,
-    "lng": -94.1737
+    "lng": -94.1737,
+    "occupancy": 700,
+    "occupancyLabel": "700 capacity",
+    "venueSizeCategory": "medium"
   },
   {
     "id": 17,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Vincent Neil Emerson",
     "month": "March",
     "monthNumber": 3,
@@ -269,10 +334,14 @@
     "dateLabel": "March 27, 2024",
     "geocodeQuery": "650 E. 2nd St, Wave, Wichita, KS, USA",
     "lat": 37.6857,
-    "lng": -97.3326
+    "lng": -97.3326,
+    "occupancy": null,
+    "occupancyLabel": "Capacity unknown",
+    "venueSizeCategory": "unknown"
   },
   {
     "id": 18,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with John Baumann",
     "month": "March",
     "monthNumber": 3,
@@ -285,10 +354,14 @@
     "dateLabel": "March 9, 2024",
     "geocodeQuery": "1747 S. Boston Avenue, Mercury Lounge, Tulsa, OK, USA",
     "lat": 36.1352,
-    "lng": -95.9786
+    "lng": -95.9786,
+    "occupancy": 150,
+    "occupancyLabel": "150 capacity",
+    "venueSizeCategory": "small"
   },
   {
     "id": 19,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey",
     "month": "March",
     "monthNumber": 3,
@@ -301,10 +374,14 @@
     "dateLabel": "March 8, 2024",
     "geocodeQuery": "401 South 3rd Street, Oklahoma Music Hall of Fame & Museum, Muskogee, OK, USA",
     "lat": 35.7475,
-    "lng": -95.3697
+    "lng": -95.3697,
+    "occupancy": 250,
+    "occupancyLabel": "Up to 250 seated",
+    "venueSizeCategory": "small"
   },
   {
     "id": 20,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey",
     "month": "February",
     "monthNumber": 2,
@@ -317,10 +394,14 @@
     "dateLabel": "February 23, 2024",
     "geocodeQuery": "1806 Buddy Holly Ave., Blue Light Live, Lubbock, TX, USA",
     "lat": 33.5806,
-    "lng": -101.855
+    "lng": -101.855,
+    "occupancy": 350,
+    "occupancyLabel": "350 capacity",
+    "venueSizeCategory": "small"
   },
   {
     "id": 21,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey",
     "month": "February",
     "monthNumber": 2,
@@ -333,10 +414,14 @@
     "dateLabel": "February 22, 2024",
     "geocodeQuery": "3803 Southwest Blvd, Magnolia Motor Lounge, Fort Worth, TX, USA",
     "lat": 32.7407,
-    "lng": -97.3695
+    "lng": -97.3695,
+    "occupancy": 300,
+    "occupancyLabel": "300 capacity",
+    "venueSizeCategory": "small"
   },
   {
     "id": 22,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Tyler Halverson",
     "month": "January",
     "monthNumber": 1,
@@ -349,10 +434,14 @@
     "dateLabel": "January 27, 2024",
     "geocodeQuery": "222 North Main Street, The Vanguard, Tulsa, OK, USA",
     "lat": 36.1577,
-    "lng": -95.9926
+    "lng": -95.9926,
+    "occupancy": 450,
+    "occupancyLabel": "450 seating capacity",
+    "venueSizeCategory": "small"
   },
   {
     "id": 23,
+    "artist": "Blaine Bailey",
     "name": "Blaine Bailey with Colten Jesse",
     "month": "August",
     "monthNumber": 8,
@@ -365,6 +454,9 @@
     "dateLabel": "August 4, 2023",
     "geocodeQuery": "1747 S. Boston Avenue, Mercury Lounge, Tulsa, OK, USA",
     "lat": 36.1352,
-    "lng": -95.9786
+    "lng": -95.9786,
+    "occupancy": 150,
+    "occupancyLabel": "150 capacity",
+    "venueSizeCategory": "small"
   }
 ]
