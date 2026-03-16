@@ -8,7 +8,6 @@ A static GitHub Pages-ready site that shows Blaine Bailey's past venues on an in
 - custom sidebar list
 - smooth fly-to map animations
 - Google Maps route links
-- browser-side coordinate caching
 
 ## Do you need the Excel file in GitHub?
 
@@ -88,8 +87,6 @@ Edit `data/venues.json` and add another object using the same structure:
 
 Open `index.html` and edit the CSS variables near the top inside `:root`.
 
-## Geocoding behavior
+## Coordinates
 
-The site geocodes venues in the browser using OpenStreetMap's Nominatim service and stores coordinates in `localStorage` so repeat visits load much faster.
-
-If you update venue addresses and want the browser to recalculate coordinates, click **Clear cached coords** in the site.
+This version includes preloaded latitude and longitude values in `data/venues.json`, so all pins render immediately on GitHub Pages without browser-side geocoding delays.

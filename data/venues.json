@@ -11,7 +11,9 @@
     "city": "McKinney",
     "state": "TX",
     "dateLabel": "June 6, 2025",
-    "geocodeQuery": "Downtown Historic Mckinney Square, McKinney, TX, USA"
+    "geocodeQuery": "Downtown Historic Mckinney Square, McKinney, TX, USA",
+    "lat": 33.198,
+    "lng": -96.616
   },
   {
     "id": 2,
@@ -25,7 +27,9 @@
     "city": "Fort Worth",
     "state": "TX",
     "dateLabel": "October 17, 2024",
-    "geocodeQuery": "112 St Louis Ave, Tulips, Fort Worth, TX, USA"
+    "geocodeQuery": "112 St Louis Ave, Tulips, Fort Worth, TX, USA",
+    "lat": 32.7316,
+    "lng": -97.3275
   },
   {
     "id": 3,
@@ -39,7 +43,9 @@
     "city": "Nashville",
     "state": "TN",
     "dateLabel": "October 10, 2024",
-    "geocodeQuery": "1604 8th Avenue South, The Basement, Nashville, TN, USA"
+    "geocodeQuery": "1604 8th Avenue South, The Basement, Nashville, TN, USA",
+    "lat": 36.1370504,
+    "lng": -86.7810663
   },
   {
     "id": 4,
@@ -53,7 +59,9 @@
     "city": "Pryor",
     "state": "OK",
     "dateLabel": "September 12, 2024",
-    "geocodeQuery": "Pryor Oklahoma, Pryor, OK, USA"
+    "geocodeQuery": "Pryor Oklahoma, Pryor, OK, USA",
+    "lat": 36.3085,
+    "lng": -95.3169
   },
   {
     "id": 5,
@@ -67,7 +75,9 @@
     "city": "Houston",
     "state": "TX",
     "dateLabel": "June 28, 2024",
-    "geocodeQuery": "5015 Kirby Drive, Goode Company Armadillo Palace, Houston, TX, USA"
+    "geocodeQuery": "5015 Kirby Drive, Goode Company Armadillo Palace, Houston, TX, USA",
+    "lat": 29.7273,
+    "lng": -95.4182
   },
   {
     "id": 6,
@@ -81,7 +91,9 @@
     "city": "Corpus Christi",
     "state": "TX",
     "dateLabel": "June 27, 2024",
-    "geocodeQuery": "1724 Tancahua St, Brewster Street Ice House, Corpus Christi, TX, USA"
+    "geocodeQuery": "1724 Tancahua St, Brewster Street Ice House, Corpus Christi, TX, USA",
+    "lat": 27.8089,
+    "lng": -97.3946
   },
   {
     "id": 7,
@@ -95,7 +107,9 @@
     "city": "Saint Jo",
     "state": "TX",
     "dateLabel": "June 22, 2024",
-    "geocodeQuery": "221 East Howell Street, Red River Station BBQ, Saint Jo, TX, USA"
+    "geocodeQuery": "221 East Howell Street, Red River Station BBQ, Saint Jo, TX, USA",
+    "lat": 33.6965,
+    "lng": -97.5223
   },
   {
     "id": 8,
@@ -109,7 +123,9 @@
     "city": "Helotes",
     "state": "TX",
     "dateLabel": "June 21, 2024",
-    "geocodeQuery": "14492 Old Bandera Rd, John T. Floore's Country Store, Helotes, TX, USA"
+    "geocodeQuery": "14492 Old Bandera Rd, John T. Floore's Country Store, Helotes, TX, USA",
+    "lat": 29.5867,
+    "lng": -98.6964
   },
   {
     "id": 9,
@@ -123,7 +139,9 @@
     "city": "Thackerville",
     "state": "OK",
     "dateLabel": "June 8, 2024",
-    "geocodeQuery": "Exit 1, I-35, WinStar World Casino & Resort, Thackerville, OK, USA"
+    "geocodeQuery": "Exit 1, I-35, WinStar World Casino & Resort, Thackerville, OK, USA",
+    "lat": 33.7591549,
+    "lng": -97.1304113
   },
   {
     "id": 10,
@@ -137,7 +155,9 @@
     "city": "Oklahoma City",
     "state": "OK",
     "dateLabel": "May 31, 2024",
-    "geocodeQuery": "1141 NW 2nd Street, Beer City Music Hall, Oklahoma City, OK, USA"
+    "geocodeQuery": "1141 NW 2nd Street, Beer City Music Hall, Oklahoma City, OK, USA",
+    "lat": 35.4689,
+    "lng": -97.5301
   },
   {
     "id": 11,
@@ -151,7 +171,9 @@
     "city": "Tulsa",
     "state": "OK",
     "dateLabel": "May 30, 2024",
-    "geocodeQuery": "423 North Main Street, Cain's Ballroom, Tulsa, OK, USA"
+    "geocodeQuery": "423 North Main Street, Cain's Ballroom, Tulsa, OK, USA",
+    "lat": 36.1596,
+    "lng": -95.9922
   },
   {
     "id": 12,
@@ -165,7 +187,9 @@
     "city": "Dallas",
     "state": "TX",
     "dateLabel": "May 29, 2024",
-    "geocodeQuery": "1230 W. Davis St., The Kessler, Dallas, TX, USA"
+    "geocodeQuery": "1230 W. Davis St., The Kessler, Dallas, TX, USA",
+    "lat": 32.7406,
+    "lng": -96.8477
   },
   {
     "id": 13,
@@ -179,7 +203,9 @@
     "city": "Fredericksburg",
     "state": "TX",
     "dateLabel": "April 13, 2024",
-    "geocodeQuery": "Luckenbach, Texas, Fredericksburg, TX, USA"
+    "geocodeQuery": "Luckenbach, Texas, Fredericksburg, TX, USA",
+    "lat": 30.2338,
+    "lng": -98.7595
   },
   {
     "id": 14,
@@ -193,7 +219,9 @@
     "city": "St Louis",
     "state": "MO",
     "dateLabel": "March 30, 2024",
-    "geocodeQuery": "3509 Lemp Avenue, Off Broadway, St Louis, MO, USA"
+    "geocodeQuery": "3509 Lemp Avenue, Off Broadway, St Louis, MO, USA",
+    "lat": 38.5949,
+    "lng": -90.2102
   },
   {
     "id": 15,
@@ -207,7 +235,9 @@
     "city": "Columbia",
     "state": "MO",
     "dateLabel": "March 29, 2024",
-    "geocodeQuery": "1013 Park Avenue, Rose Music Hall, Columbia, MO, USA"
+    "geocodeQuery": "1013 Park Avenue, Rose Music Hall, Columbia, MO, USA",
+    "lat": 38.9517,
+    "lng": -92.3258
   },
   {
     "id": 16,
@@ -221,7 +251,9 @@
     "city": "Fayetteville",
     "state": "AR",
     "dateLabel": "March 28, 2024",
-    "geocodeQuery": "519 W. Dickson St., George's Majestic Lounge, Fayetteville, AR, USA"
+    "geocodeQuery": "519 W. Dickson St., George's Majestic Lounge, Fayetteville, AR, USA",
+    "lat": 36.0679,
+    "lng": -94.1737
   },
   {
     "id": 17,
@@ -235,7 +267,9 @@
     "city": "Wichita",
     "state": "KS",
     "dateLabel": "March 27, 2024",
-    "geocodeQuery": "650 E. 2nd St, Wave, Wichita, KS, USA"
+    "geocodeQuery": "650 E. 2nd St, Wave, Wichita, KS, USA",
+    "lat": 37.6857,
+    "lng": -97.3326
   },
   {
     "id": 18,
@@ -249,7 +283,9 @@
     "city": "Tulsa",
     "state": "OK",
     "dateLabel": "March 9, 2024",
-    "geocodeQuery": "1747 S. Boston Avenue, Mercury Lounge, Tulsa, OK, USA"
+    "geocodeQuery": "1747 S. Boston Avenue, Mercury Lounge, Tulsa, OK, USA",
+    "lat": 36.1352,
+    "lng": -95.9786
   },
   {
     "id": 19,
@@ -263,7 +299,9 @@
     "city": "Muskogee",
     "state": "OK",
     "dateLabel": "March 8, 2024",
-    "geocodeQuery": "401 South 3rd Street, Oklahoma Music Hall of Fame & Museum, Muskogee, OK, USA"
+    "geocodeQuery": "401 South 3rd Street, Oklahoma Music Hall of Fame & Museum, Muskogee, OK, USA",
+    "lat": 35.7475,
+    "lng": -95.3697
   },
   {
     "id": 20,
@@ -277,7 +315,9 @@
     "city": "Lubbock",
     "state": "TX",
     "dateLabel": "February 23, 2024",
-    "geocodeQuery": "1806 Buddy Holly Ave., Blue Light Live, Lubbock, TX, USA"
+    "geocodeQuery": "1806 Buddy Holly Ave., Blue Light Live, Lubbock, TX, USA",
+    "lat": 33.5806,
+    "lng": -101.855
   },
   {
     "id": 21,
@@ -291,7 +331,9 @@
     "city": "Fort Worth",
     "state": "TX",
     "dateLabel": "February 22, 2024",
-    "geocodeQuery": "3803 Southwest Blvd, Magnolia Motor Lounge, Fort Worth, TX, USA"
+    "geocodeQuery": "3803 Southwest Blvd, Magnolia Motor Lounge, Fort Worth, TX, USA",
+    "lat": 32.7407,
+    "lng": -97.3695
   },
   {
     "id": 22,
@@ -305,7 +347,9 @@
     "city": "Tulsa",
     "state": "OK",
     "dateLabel": "January 27, 2024",
-    "geocodeQuery": "222 North Main Street, The Vanguard, Tulsa, OK, USA"
+    "geocodeQuery": "222 North Main Street, The Vanguard, Tulsa, OK, USA",
+    "lat": 36.1577,
+    "lng": -95.9926
   },
   {
     "id": 23,
@@ -319,6 +363,8 @@
     "city": "Tulsa",
     "state": "OK",
     "dateLabel": "August 4, 2023",
-    "geocodeQuery": "1747 S. Boston Avenue, Mercury Lounge, Tulsa, OK, USA"
+    "geocodeQuery": "1747 S. Boston Avenue, Mercury Lounge, Tulsa, OK, USA",
+    "lat": 36.1352,
+    "lng": -95.9786
   }
 ]

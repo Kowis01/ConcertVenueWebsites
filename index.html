@@ -466,8 +466,7 @@
         <div class="toolbar">
           <button class="button" id="fitAllBtn">Fit all pins</button>
           <button class="button secondary" id="resetBtn">Reset filters</button>
-          <button class="button secondary" id="clearCacheBtn" title="Clears saved coordinates so the browser geocodes again.">Clear cached coords</button>
-        </div>
+                  </div>
 
         <div class="status" id="statusText">Loading venues…</div>
 
@@ -501,7 +500,6 @@
   <script>
     const MAP_CENTER = [39.5, -98.35];
     const MAP_ZOOM = 4;
-    const COORD_CACHE_KEY = 'blaine-bailey-coordinates-v1';
     const map = L.map('map', {
       zoomControl: false,
       minZoom: 3,
@@ -542,7 +540,6 @@
       sortFilter: document.getElementById('sortFilter'),
       fitAllBtn: document.getElementById('fitAllBtn'),
       resetBtn: document.getElementById('resetBtn'),
-      clearCacheBtn: document.getElementById('clearCacheBtn'),
       results: document.getElementById('results'),
       resultCount: document.getElementById('resultCount'),
       statusText: document.getElementById('statusText'),
@@ -754,81 +751,29 @@
       map.flyToBounds(group.getBounds().pad(0.18), { duration: 1.2 });
     }
 
-    function saveCache(cache) {
-      localStorage.setItem(COORD_CACHE_KEY, JSON.stringify(cache));
-    }
-
-    function getCache() {
-      try {
-        return JSON.parse(localStorage.getItem(COORD_CACHE_KEY) || '{}');
-      } catch {
-        return {};
-      }
-    }
-
-    async function geocodeVenue(venue) {
-      const cache = getCache();
-      if (cache[venue.id]) return cache[venue.id];
-
-      const url = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=us&q=${encodeURIComponent(venue.geocodeQuery)}`;
-      const response = await fetch(url, {
-        headers: {
-          'Accept': 'application/json'
-        }
-      });
-      if (!response.ok) throw new Error(`Geocoder returned ${response.status}`);
-
-      const data = await response.json();
-      if (!data.length) return null;
-
-      const result = {
-        lat: Number(data[0].lat),
-        lng: Number(data[0].lon)
-      };
-      cache[venue.id] = result;
-      saveCache(cache);
-      return result;
-    }
-
     async function resolveCoordinates(venues) {
-      const cache = getCache();
-      let done = 0;
       let mapped = 0;
 
-      for (const venue of venues) {
-        try {
-          let coords = cache[venue.id] || null;
-          if (!coords) {
-            els.coordStatus.textContent = `Geocoding ${done + 1}/${venues.length}`;
-            coords = await geocodeVenue(venue);
-            await delay(550);
-          }
+      venues.forEach(venue => {
+        const coords = (Number.isFinite(venue.lat) && Number.isFinite(venue.lng))
+          ? { lat: Number(venue.lat), lng: Number(venue.lng) }
+          : null;
 
-          if (coords && Number.isFinite(coords.lat) && Number.isFinite(coords.lng)) {
-            venue.lat = coords.lat;
-            venue.lng = coords.lng;
-            const marker = L.marker([coords.lat, coords.lng], { icon: customIcon, title: venue.venue })
-              .bindPopup(buildPopup(venue));
+        if (!coords) return;
 
-            marker.on('click', () => {
-              activeId = venue.id;
-              renderList();
-            });
+        const marker = L.marker([coords.lat, coords.lng], { icon: customIcon, title: venue.venue })
+          .bindPopup(buildPopup(venue));
 
-            markersById.set(venue.id, marker);
-            mapped += 1;
-          }
-        } catch (error) {
-          console.warn('Failed to geocode', venue, error);
-        } finally {
-          done += 1;
-          els.coordStatus.textContent = `${mapped}/${venues.length} mapped`;
-        }
-      }
-    }
+        marker.on('click', () => {
+          activeId = venue.id;
+          renderList();
+        });
 
-    function delay(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+        markersById.set(venue.id, marker);
+        mapped += 1;
+      });
+
+      els.coordStatus.textContent = `${mapped}/${venues.length} mapped`;
     }
 
     function resetFilters() {
@@ -851,11 +796,6 @@
 
       els.fitAllBtn.addEventListener('click', fitToVisible);
       els.resetBtn.addEventListener('click', resetFilters);
-      els.clearCacheBtn.addEventListener('click', () => {
-        localStorage.removeItem(COORD_CACHE_KEY);
-        location.reload();
-      });
-
       els.sidebarToggle.addEventListener('click', () => {
         const open = els.sidebar.classList.toggle('open');
         els.sidebarToggle.textContent = open ? 'Hide list' : 'Show list';
@@ -879,12 +819,12 @@
       initStats(allVenues);
       initFilters(allVenues);
       buildFuseIndex(allVenues);
-      setStatus('Geocoding venues and building the map…');
+      setStatus('Building the map…');
 
       await resolveCoordinates(allVenues);
       filterVenues();
       fitToVisible();
-      setStatus('Ready. Search, filter, click a card, or zoom into a cluster.');
+      setStatus('Ready. All venue pins are preloaded for faster browsing.');
 
       const hash = window.location.hash || '';
       const match = hash.match(/^#venue-(\d+)$/);
