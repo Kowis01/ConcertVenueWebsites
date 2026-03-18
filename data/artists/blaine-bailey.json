@@ -233,8 +233,8 @@
     "state": "TX",
     "dateLabel": "May 29, 2024",
     "geocodeQuery": "1230 W. Davis St., The Kessler, Dallas, TX, USA",
-    "lat": 32.749352,
-    "lng": -96.84259,
+    "lat": 32.7494,
+    "lng": -96.8426,
     "occupancy": 500,
     "occupancyLabel": "Up to 500 capacity",
     "venueSizeCategory": "medium"
