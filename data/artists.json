@@ -16,5 +16,14 @@
     "lastYear": 2026,
     "statesCount": 37,
     "dataFile": "data/artists/josh-meloy.json"
+  },
+  {
+    "artist": "Turnpike Troubadours",
+    "slug": "turnpike-troubadours",
+    "showCount": 409,
+    "firstYear": 2014,
+    "lastYear": 2026,
+    "statesCount": 50,
+    "dataFile": "data/artists/turnpike-troubadours.json"
   }
 ]
