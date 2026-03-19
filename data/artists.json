@@ -34,5 +34,14 @@
     "lastYear": 2026,
     "statesCount": 49,
     "dataFile": "data/artists/american-aquarium.json"
+  },
+  {
+    "artist": "Flatland Cavalry",
+    "slug": "flatland-cavalry",
+    "showCount": 273,
+    "firstYear": 2022,
+    "lastYear": 2026,
+    "statesCount": 47,
+    "dataFile": "data/artists/flatland-cavalry.json"
   }
 ]
