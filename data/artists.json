@@ -25,5 +25,14 @@
     "lastYear": 2026,
     "statesCount": 50,
     "dataFile": "data/artists/turnpike-troubadours.json"
+  },
+  {
+    "artist": "American Aquarium",
+    "slug": "american-aquarium",
+    "showCount": 494,
+    "firstYear": 2017,
+    "lastYear": 2026,
+    "statesCount": 49,
+    "dataFile": "data/artists/american-aquarium.json"
   }
 ]
