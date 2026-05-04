@@ -1,3 +1,5 @@
+# This is a website made completely using AI that I am hosting on Github. A side project to help my sister out. 
+
 # Blaine Bailey Concert Map
 
 A static GitHub Pages-ready site that shows Blaine Bailey's past venues on an interactive map with:
